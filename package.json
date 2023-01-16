@@ -1,0 +1,39 @@
+{
+  "name": "react-scroll-slider",
+  "version": "1.0.0",
+  "description": "A react library that renders a vertical scroll slider",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NicolasSaikali/react-scroll-slider.git"
+  },
+  "keywords": [
+    "react",
+    "scroll",
+    "slider",
+    "scrollslider",
+    "scroll-slider",
+    "library",
+    "reactjs",
+    "javascript",
+    "animations",
+    "animation",
+    "transitions",
+    "transition"
+  ],
+  "author": "nicolas-saikali",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/NicolasSaikali/react-scroll-slider/issues"
+  },
+  "homepage": "https://github.com/NicolasSaikali/react-scroll-slider#readme",
+  "dependencies": {
+    "@types/react": "^18.0.26",
+    "@types/react-dom": "^18.0.10",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}
