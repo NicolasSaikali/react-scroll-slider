@@ -1,5 +1,5 @@
 import React from "react";
-import { ScrollSlideType, ScrollSliderState, ScrollSliderType } from "../types";
+import { ScrollSlideType, ScrollSliderSensitivity, ScrollSliderState, ScrollSliderType } from "../types";
 import { ScrollSlide } from "../scroll-slide";
 import { styles } from "./styles";
 
@@ -9,11 +9,13 @@ export default class ScrollSlider extends React.Component<ScrollSliderType, Scro
         duration: 700,
         direction: "normal",
         fill: "forwards",
-        easing: "ease-in-out"
+        easing: "ease-in-out",
+        ...this.props.animationOptions
     };
 
     constructor(props: ScrollSliderType) {
         super(props);
+
         this.state = {
             activeSlide: 0,
             refs: new Array(props?.slides?.length || 0),
@@ -21,7 +23,10 @@ export default class ScrollSlider extends React.Component<ScrollSliderType, Scro
                 ...this.animationOptions,
                 ...props.animationOptions
             },
-            lastTouchY: Infinity
+            lastTouchY: Infinity,
+            scrollLocked: false,
+            sensitivity: props.sensitivity || ScrollSliderSensitivity.VERY_HIGH
+
         }
     }
 
@@ -72,21 +77,51 @@ export default class ScrollSlider extends React.Component<ScrollSliderType, Scro
     }
 
     public handleScroll = (e: React.UIEvent<HTMLDivElement, UIEvent>) => {
-        console.log(e.currentTarget.closest(".scroll-slide"))
+        if (this.state.scrollLocked) return
         const dy = (e?.nativeEvent as any)?.['deltaY']
-        if (dy > 0)
+        let delay = this.animationOptions?.duration
+
+        if (!!delay)
+            delay = parseInt(delay?.toString())
+        else
+            delay = 700
+
+        if (dy > this.state.sensitivity)
             this.showNextSlide()
-        else this.showPreviousSlide()
+        else if (dy < -this.state.sensitivity)
+            this.showPreviousSlide()
+
+        this.setState({
+            scrollLocked: true
+        })
+
+        setTimeout(() => {
+            this.setState({
+                scrollLocked: false
+            })
+        }, delay)
     }
 
     public handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
         this.setState({ lastTouchY: e.touches[0]?.clientY })
     }
 
+    private shouldBreak = (e: any) => {
+        let shouldBreak = false
+        this.props.preventDefaultOn?.forEach(item => {
+            if ((e as any).target.closest(item) !== null)
+                shouldBreak = true
+        })
+        return shouldBreak
+    }
+
     public handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
-        if (e.changedTouches[0]?.clientY < this.state.lastTouchY)
+        if (this.shouldBreak(e)) return
+
+        if (e.changedTouches[0]?.clientY < (this.state.lastTouchY - 50))
             this.showNextSlide()
-        else this.showPreviousSlide()
+        else if(e.changedTouches[0]?.clientY > (this.state.lastTouchY + 50))
+            this.showPreviousSlide()
     }
     public renderItem = (item: ScrollSlideType, index: number) => {
         return <ScrollSlide
@@ -120,8 +155,8 @@ export default class ScrollSlider extends React.Component<ScrollSliderType, Scro
     public navigateToIndex(index: number) {
         let direction = "forwards"
         let delay = this.animationOptions.duration
-        
-        if(index === this.state.activeSlide)
+
+        if (index === this.state.activeSlide)
             return
 
         else if (index < this.state.activeSlide) {
@@ -130,17 +165,17 @@ export default class ScrollSlider extends React.Component<ScrollSliderType, Scro
 
         if (!!delay)
             delay = parseInt(delay?.toString())
-        else delay = 500
+        else delay = 700
 
         if (direction === "backwards") {
-            for(let i = this.state.activeSlide; i>=0; i--){
+            for (let i = this.state.activeSlide; i >= 0; i--) {
                 const animation = {
                     top: `${(i - index) * window.innerHeight}px`
                 }
                 this.state.refs[i].animate([animation], this.animationOptions)
             }
         } else {
-            for(let i = 0; i<this.state.refs.length; i++){
+            for (let i = 0; i < this.state.refs.length; i++) {
                 const animation = {
                     top: `-${(index - i) * window.innerHeight}px`
                 }

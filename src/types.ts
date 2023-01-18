@@ -14,18 +14,30 @@ export type ScrollSliderState = {
     activeSlide: number;
     refs: Array<HTMLDivElement>;
     options: KeyframeAnimationOptions;
-    lastTouchY: number
+    lastTouchY: number,
+    scrollLocked?: boolean,
+    sensitivity: number
+}
+
+export const ScrollSliderSensitivity = {
+    VERY_LOW: 32,
+    LOW: 24,
+    MEDIUM: 16,
+    HIGH: 8,
+    VERY_HIGH: 0
 }
 
 export type ScrollSliderType = {
     ref?: Ref<ScrollSlider> | null | undefined;
     slides: ScrollSlideType[];
     animationType?: "fade-in" | "translate" | "translate-fade-in";
-    progressComponent?: JSX.Element
+    sensitivity?: number,
+    progressComponent?: JSX.Element;
     withProgress?: boolean;
     animationOptions?: KeyframeAnimationOptions;
-    progressStyle?: CSSProperties,
-    style?: CSSProperties,
+    progressStyle?: CSSProperties;
+    style?: CSSProperties;
+    preventDefaultOn?:string[];
     onSlideChange?: (newSlide: number) => void;
-    onProgress?:(progress: number) => void
+    onProgress?:(progress: number) => void;
 }
