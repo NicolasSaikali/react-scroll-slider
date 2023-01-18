@@ -2,7 +2,7 @@
 # react-scroll-slider
 
 A package developed to design web application based on a vertical slider. Where each page / section is a slide.
-
+You can check my website for example [http://nicolas-saikali.com/](http://nicolas-saikali.com/)
 ## Usage
 ```typescript
 function App(){
